@@ -1,5 +1,0 @@
-﻿测试模式,方案,完成时间(min),死锁次数,碰撞次数,相对提升(%)
-baseline,Naive,68.5,28,2,0.0
-baseline,Path Only,58.2,15,0,15.0
-baseline,Path+Reservation,42.7,6,0,37.7
-baseline,Proposed,35.1,2,0,48.8
