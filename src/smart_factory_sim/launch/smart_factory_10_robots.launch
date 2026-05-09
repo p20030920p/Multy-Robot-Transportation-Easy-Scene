@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <!-- 参数配置 -->
+  <arg name="world_name" default="$(find smart_factory_sim)/worlds/smart_factory_10robots.world"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="verbose" default="false"/>
+  
+  <!-- 启动Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="verbose" value="$(arg verbose)"/>
+  </include>
+  
+  <!-- Generate 10 robots - ⭐⭐⭐ 四角均匀分布（避免左下角拥堵）-->
+  <!-- 新布局：左上3个，左下3个，右上2个，右下2个 -->
+  
+  <!-- 左上角区域（空桶区附近）- 3个机器人 -->
+  <group ns="robot_0">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=0"/>
+    <node name="spawn_robot_0" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_0 -x 3.5 -y 1.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_0"/>
+    </node>
+  </group>
+  
+  <group ns="robot_1">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=1"/>
+    <node name="spawn_robot_1" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_1 -x 3.5 -y 3.0 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_1"/>
+    </node>
+  </group>
+  
+  <group ns="robot_2">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=2"/>
+    <node name="spawn_robot_2" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_2 -x 1.0 -y 3.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_2"/>
+    </node>
+  </group>
+  
+  <!-- 左下角区域（绿桶区附近）- 3个机器人 -->
+  <group ns="robot_3">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=3"/>
+    <node name="spawn_robot_3" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_3 -x 3.5 -y 7.0 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_3"/>
+    </node>
+  </group>
+  
+  <group ns="robot_4">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=4"/>
+    <node name="spawn_robot_4" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_4 -x 3.5 -y 8.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_4"/>
+    </node>
+  </group>
+  
+  <group ns="robot_5">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=5"/>
+    <node name="spawn_robot_5" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_5 -x 1.0 -y 6.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_5"/>
+    </node>
+  </group>
+  
+  <!-- 右上角区域（黄桶区附近）- 2个机器人 -->
+  <group ns="robot_6">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=6"/>
+    <node name="spawn_robot_6" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_6 -x 13.0 -y 1.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_6"/>
+    </node>
+  </group>
+  
+  <group ns="robot_7">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=7"/>
+    <node name="spawn_robot_7" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_7 -x 13.0 -y 3.0 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_7"/>
+    </node>
+  </group>
+  
+  <!-- 右下角区域（红桶区附近）- 2个机器人 -->
+  <group ns="robot_8">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=8"/>
+    <node name="spawn_robot_8" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_8 -x 13.0 -y 7.0 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_8"/>
+    </node>
+  </group>
+  
+  <group ns="robot_9">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find smart_factory_sim)/urdf/agv_robot.urdf.xacro' robot_id:=9"/>
+    <node name="spawn_robot_9" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_9 -x 13.0 -y 8.5 -z 0.15" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="robot_9"/>
+    </node>
+  </group>
+  
+  <!-- 启动rosbridge_server用于Web通信 -->
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+    <arg name="port" value="9090"/>
+  </include>
+  
+  <!-- 启动工厂管理节点 -->
+  <node name="factory_web_controller" pkg="smart_factory_sim" type="factory_web_controller.py" output="screen"/>
+  
+</launch>

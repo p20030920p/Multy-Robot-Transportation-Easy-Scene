@@ -1,0 +1,8 @@
+prefix=/home/qzl/graduate/catkin_ws/install
+
+Name: smart_factory_sim
+Description: Description of smart_factory_sim
+Version: 1.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: rospy std_msgs geometry_msgs nav_msgs sensor_msgs tf gazebo_ros move_base_msgs actionlib message_runtime

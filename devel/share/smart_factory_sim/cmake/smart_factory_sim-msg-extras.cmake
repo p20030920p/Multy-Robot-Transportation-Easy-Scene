@@ -1,0 +1,2 @@
+set(smart_factory_sim_MESSAGE_FILES "/home/qzl/graduate/catkin_ws/src/smart_factory_sim/msg/MaterialInfo.msg;/home/qzl/graduate/catkin_ws/src/smart_factory_sim/msg/TaskStatus.msg;/home/qzl/graduate/catkin_ws/src/smart_factory_sim/msg/MachineState.msg")
+set(smart_factory_sim_SERVICE_FILES "/home/qzl/graduate/catkin_ws/src/smart_factory_sim/srv/AssignTask.srv;/home/qzl/graduate/catkin_ws/src/smart_factory_sim/srv/ProcessMaterial.srv")

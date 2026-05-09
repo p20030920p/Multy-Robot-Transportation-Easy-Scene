@@ -1,0 +1,96 @@
+<launch>
+  <!-- ==================== 参数配置 ==================== -->
+  <arg name="num_robots" default="10"/>
+  <arg name="batch_size" default="6"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="use_gui" default="true"/>
+  
+  <!-- ==================== 启动Gazebo仿真环境 ==================== -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find smart_factory_sim)/worlds/factory_floor.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="$(arg use_gui)"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+  
+  <!-- ==================== 生成地图服务器（用于导航） ==================== -->
+  <node name="map_server" pkg="map_server" type="map_server" 
+        args="$(find smart_factory_sim)/maps/factory_map.yaml">
+    <param name="frame_id" value="map"/>
+  </node>
+  
+  <!-- ==================== 工厂管理节点 ==================== -->
+  <node pkg="smart_factory_sim" type="factory_manager_node.py" 
+        name="factory_manager" output="screen">
+    <param name="num_robots" value="$(arg num_robots)"/>
+    <param name="batch_size" value="$(arg batch_size)"/>
+    <param name="map_width" value="10.0"/>
+    <param name="map_height" value="10.0"/>
+  </node>
+  
+  <!-- ==================== 任务调度节点 ==================== -->
+  <node pkg="smart_factory_sim" type="task_scheduler_node.py" 
+        name="task_scheduler" output="screen">
+    <param name="num_robots" value="$(arg num_robots)"/>
+  </node>
+  
+  <!-- ==================== 生成10个机器人 ==================== -->
+  <!-- 机器人0 -->
+  <group ns="robot_0">
+    <param name="robot_description" 
+           command="$(find xacro)/xacro $(find smart_factory_sim)/urdf/agv_robot.urdf.xacro robot_id:=0"/>
+    
+    <node name="spawn_robot_0" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_0 -x 0.7 -y 0.8 -z 0.1"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" value="50.0"/>
+    </node>
+    
+    <include file="$(find smart_factory_sim)/launch/move_base.launch">
+      <arg name="robot_id" value="0"/>
+    </include>
+    
+    <node pkg="smart_factory_sim" type="robot_controller_node.py" 
+          name="robot_controller" output="screen">
+      <param name="robot_id" value="0"/>
+    </node>
+  </group>
+  
+  <!-- 机器人1-9 (使用宏简化) -->
+  <group ns="robot_1">
+    <param name="robot_description" 
+           command="$(find xacro)/xacro $(find smart_factory_sim)/urdf/agv_robot.urdf.xacro robot_id:=1"/>
+    <node name="spawn_robot_1" pkg="gazebo_ros" type="spawn_model" 
+          args="-urdf -param robot_description -model robot_1 -x 0.9 -y 0.8 -z 0.1"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+    <include file="$(find smart_factory_sim)/launch/move_base.launch">
+      <arg name="robot_id" value="1"/>
+    </include>
+    <node pkg="smart_factory_sim" type="robot_controller_node.py" name="robot_controller" output="screen">
+      <param name="robot_id" value="1"/>
+    </node>
+  </group>
+  
+  <!-- 重复机器人2-9的配置... (为节省空间，实际应用时需要完整生成) -->
+  
+  <!-- ==================== Rviz可视化 ==================== -->
+  <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz" 
+        args="-d $(find smart_factory_sim)/rviz/factory_view.rviz"/>
+  
+  <!-- ==================== rqt监控工具（可选） ==================== -->
+  <!-- <node pkg="rqt_graph" type="rqt_graph" name="rqt_graph"/> -->
+
+  <!-- ==================== 启动rosbridge服务器 (Web通信) ==================== -->
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+    <arg name="port" value="9090"/>
+  </include>
+  
+  <!-- ==================== 启动tf2 web republisher (用于3D可视化) ==================== -->
+  <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher"/>
+  
+  <!-- ==================== 启动示例talker节点 ==================== -->
+  <node pkg="rospy_tutorials" type="talker" name="talker" output="screen"/>
+</launch>

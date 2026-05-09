@@ -1,0 +1,7 @@
+# 任务分配服务请求
+int32 task_id
+int32 robot_id
+---
+# 任务分配服务响应
+bool success
+string message

@@ -1,0 +1,372 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="smart_factory_colored_zones">
+    
+    <!-- 物理引擎设置 -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    
+    <!-- 光照 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    
+    <!-- 地面 - 10m x 10m (对应2D的1000x1000像素) -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>10 10</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>10 10</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 区域涂色标记 - 无碰撞体积，仅视觉 -->
+    
+    <!-- 1. 空桶存储区 (100,100) -> (1m, 1m) 浅灰色 -->
+    <model name="empty_storage_zone">
+      <static>true</static>
+      <pose>1.0 1.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 0.8</ambient>
+            <diffuse>0.8 0.8 0.8 0.8</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 2. 绿桶存储区 (100,300) -> (1m, 3m) 浅绿色 -->
+    <model name="green_storage_zone">
+      <static>true</static>
+      <pose>1.0 3.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.9 0.5 0.8</ambient>
+            <diffuse>0.6 1.0 0.6 0.8</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 3. 黄桶存储区 (100,500) -> (1m, 5m) 浅黄色 -->
+    <model name="yellow_storage_zone">
+      <static>true</static>
+      <pose>1.0 5.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.5 0.8</ambient>
+            <diffuse>1.0 1.0 0.6 0.8</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 4. 红桶存储区 (100,700) -> (1m, 7m) 浅红色 -->
+    <model name="red_storage_zone">
+      <static>true</static>
+      <pose>1.0 7.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 0.5 0.5 0.8</ambient>
+            <diffuse>1.0 0.6 0.6 0.8</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 5. 完成区 (950,400) -> (9.5m, 4m) 深绿色 -->
+    <model name="completed_zone">
+      <static>true</static>
+      <pose>9.5 4.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.8 0.2 0.8</ambient>
+            <diffuse>0.3 0.9 0.3 0.8</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 梳棉机区域 (4台) - 蓝色标记，无碰撞 -->
+    <!-- 机器位置: (325, 150+i*200) -> (3.25m, 1.5+i*2m) -->
+    <model name="carding_zone_0">
+      <static>true</static>
+      <pose>3.25 1.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.5 0.9 0.7</ambient>
+            <diffuse>0.4 0.6 1.0 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_zone_1">
+      <static>true</static>
+      <pose>3.25 3.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.5 0.9 0.7</ambient>
+            <diffuse>0.4 0.6 1.0 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_zone_2">
+      <static>true</static>
+      <pose>3.25 5.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.5 0.9 0.7</ambient>
+            <diffuse>0.4 0.6 1.0 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_zone_3">
+      <static>true</static>
+      <pose>3.25 7.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.5 0.9 0.7</ambient>
+            <diffuse>0.4 0.6 1.0 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机1区域 (2台) - 绿色标记 -->
+    <!-- 机器位置: (575, 200+i*300) -> (5.75m, 2+i*3m) -->
+    <model name="drawing1_zone_0">
+      <static>true</static>
+      <pose>5.75 2.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.9 0.5 0.7</ambient>
+            <diffuse>0.4 1.0 0.6 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing1_zone_1">
+      <static>true</static>
+      <pose>5.75 5.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.9 0.5 0.7</ambient>
+            <diffuse>0.4 1.0 0.6 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机2区域 (2台) - 黄色标记 -->
+    <!-- 机器位置: (775, 200+i*300) -> (7.75m, 2+i*3m) -->
+    <model name="drawing2_zone_0">
+      <static>true</static>
+      <pose>7.75 2.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 0.9 0.3 0.7</ambient>
+            <diffuse>1.0 1.0 0.4 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing2_zone_1">
+      <static>true</static>
+      <pose>7.75 5.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.6 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 0.9 0.3 0.7</ambient>
+            <diffuse>1.0 1.0 0.4 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 梳棉机等待区标记 (淡蓝色) -->
+    <model name="carding_waiting_zone_0">
+      <static>true</static>
+      <pose>2.5 1.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.8 1.0 0.6</ambient>
+            <diffuse>0.8 0.9 1.0 0.6</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_zone_1">
+      <static>true</static>
+      <pose>2.5 3.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.8 1.0 0.6</ambient>
+            <diffuse>0.8 0.9 1.0 0.6</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_zone_2">
+      <static>true</static>
+      <pose>2.5 5.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.8 1.0 0.6</ambient>
+            <diffuse>0.8 0.9 1.0 0.6</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_zone_3">
+      <static>true</static>
+      <pose>2.5 7.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.8 1.0 0.6</ambient>
+            <diffuse>0.8 0.9 1.0 0.6</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- GUI设置 - 俯视角度，便于观察整个工厂 -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>5.0 -3.0 12.0 0 1.2 1.57</pose>
+      </camera>
+    </gui>
+    
+  </world>
+</sdf>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Factory Experiment Dashboard</title>
+    <style>
+        :root {
+            --bg-steel: #0f1720;
+            --bg-steel-soft: #1a2632;
+            --panel: #1f2d3a;
+            --panel-2: #243646;
+            --line: #3a5167;
+            --text-main: #e8eef5;
+            --text-dim: #9fb0c2;
+            --accent: #00b3a4;
+            --accent-warn: #ff9f1c;
+            --accent-good: #2dc653;
+            --accent-danger: #ff595e;
+            --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'IBM Plex Sans', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(0, 179, 164, 0.18), transparent 35%),
+                radial-gradient(circle at 90% 100%, rgba(255, 159, 28, 0.14), transparent 36%),
+                linear-gradient(145deg, #0c131b 0%, #121d28 42%, #0f1720 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
+            animation: panel-rise 450ms ease-out;
+        }
+
+        .header,
+        .progress-section,
+        .robots-section,
+        .events-section,
+        .action-section,
+        .stat-card {
+            background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header,
+        .progress-section,
+        .robots-section,
+        .events-section,
+        .action-section {
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .header {
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent 0,
+                transparent 9px,
+                rgba(255, 159, 28, 0.08) 9px,
+                rgba(255, 159, 28, 0.08) 13px
+            );
+            pointer-events: none;
+        }
+
+        .header h1 {
+            position: relative;
+            color: #f8fbff;
+            font-size: 30px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .experiment-info {
+            position: relative;
+            background: rgba(7, 16, 24, 0.45);
+            border: 1px solid var(--line);
+            padding: 14px;
+            border-radius: 10px;
+        }
+
+        .experiment-info h2 {
+            color: var(--text-dim);
+            font-size: 17px;
+            margin-bottom: 10px;
+            letter-spacing: 0.4px;
+        }
+
+        .experiment-badge {
+            display: inline-block;
+            padding: 7px 14px;
+            background: linear-gradient(90deg, #008f84, #00b3a4);
+            color: #e8fffd;
+            border: 1px solid #15c6b6;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+
+        .status-banner {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 7px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .status-running {
+            background: rgba(45, 198, 83, 0.2);
+            border: 1px solid rgba(45, 198, 83, 0.65);
+            color: #bff5cd;
+        }
+
+        .status-waiting {
+            background: rgba(255, 159, 28, 0.18);
+            border: 1px solid rgba(255, 159, 28, 0.62);
+            color: #ffe2bb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            border-left: 3px solid var(--accent);
+            transition: transform 240ms ease, border-color 240ms ease;
+            animation: stagger-in 340ms ease both;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-left-color: var(--accent-warn);
+        }
+
+        .stat-card h3 {
+            color: var(--text-dim);
+            font-size: 13px;
+            letter-spacing: 0.35px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #dff9f6;
+            line-height: 1;
+        }
+
+        .progress-section h2,
+        .robots-section h2,
+        .events-section h2,
+        .action-section h2 {
+            color: #edf5ff;
+            margin-bottom: 10px;
+            letter-spacing: 0.4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #16222f;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #008f84 0%, #00b3a4 50%, #2dc653 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #032a29;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .robots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .robot-card {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: rgba(10, 19, 27, 0.5);
+        }
+
+        .robot-idle { border-left: 3px solid #4cc9f0; }
+        .robot-moving { border-left: 3px solid #2dc653; }
+        .robot-loading { border-left: 3px solid #ff9f1c; }
+        .robot-unloading { border-left: 3px solid #f72585; }
+
+        .robot-name {
+            font-weight: 700;
+            color: #f4f8fd;
+            margin-bottom: 7px;
+            letter-spacing: 0.3px;
+        }
+
+        .robot-status {
+            font-size: 12px;
+            color: #b7c6d5;
+            margin-bottom: 4px;
+        }
+
+        .event-log {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding-right: 4px;
+        }
+
+        .event-item {
+            padding: 10px;
+            border-bottom: 1px dashed #3b4d5f;
+        }
+
+        .event-time {
+            color: #94a8bb;
+            font-size: 12px;
+        }
+
+        .event-message {
+            color: #e2ebf5;
+            margin-top: 4px;
+        }
+
+        .action-section {
+            text-align: center;
+        }
+
+        .report-status-box {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(9, 18, 26, 0.55);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            text-align: left;
+            color: #d2deea;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #ff9f1c, #ffbf69);
+            border-color: #ffca7a;
+            color: #3b2400;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(255, 159, 28, 0.35);
+        }
+
+        .last-update {
+            text-align: center;
+            color: #a6b8ca;
+            margin-top: 16px;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+
+        @keyframes panel-rise {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes stagger-in {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题栏 -->
+        <div class="header">
+            <h1>Smart Factory Experiment Dashboard</h1>
+            <div class="experiment-info">
+                <h2>Current Experiment</h2>
+                <span class="experiment-badge" id="experimentMode">Loading...</span>
+                <span class="experiment-badge" id="algorithmMode" style="background:linear-gradient(90deg, #f08f19, #ffb347); color:#3a2300; border-color:#ffc570; margin-left:10px;">Algorithm: --</span>
+                <div id="statusBanner" class="status-banner status-waiting">System is initializing...</div>
+            </div>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Tasks</h3>
+                <div class="stat-value" id="totalTasks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="stat-value" id="completedTasks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Elapsed Time</h3>
+                <div class="stat-value" id="elapsedTime">0s</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completion Rate</h3>
+                <div class="stat-value" id="completionRate">0%</div>
+            </div>
+        </div>
+        
+        <!-- 进度条 -->
+        <div class="progress-section">
+            <h2>Task Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Deadlock Count</h3>
+                <div class="stat-value" id="deadlockCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Yield Count</h3>
+                <div class="stat-value" id="yieldCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recovery Count</h3>
+                <div class="stat-value" id="recoveryCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Collision Risk Events</h3>
+                <div class="stat-value" id="collisionCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Throughput</h3>
+                <div class="stat-value" id="throughput">0.00</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Task Time</h3>
+                <div class="stat-value" id="avgTaskTime">0s</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>🏁 Makespan</h3>
+                <div class="stat-value" id="makespan">0s</div>
+            </div>
+            <div class="stat-card">
+                <h3>📏 Total Travel Distance</h3>
+                <div class="stat-value" id="totalTravelDistance">0m</div>
+            </div>
+            <div class="stat-card">
+                <h3>⚖️ Load Balance (Gini)</h3>
+                <div class="stat-value" id="loadBalanceGini">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>🤖 Robot Count</h3>
+                <div class="stat-value" id="robotCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>📦 Task Count</h3>
+                <div class="stat-value" id="taskCount">0</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>✅ Success Rate</h3>
+                <div class="stat-value" id="taskCompletionRatePct">0.0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>🔓 Deadlock Resolution Ratio</h3>
+                <div class="stat-value" id="deadlockResolutionRatio">0.0%</div>
+            </div>
+        </div>
+        
+        <!-- 机器人状态 -->
+        <div class="robots-section">
+            <h2>Robot Status (10 Units)</h2>
+            <div class="robots-grid" id="robotsGrid">
+                <!-- Robot cards are generated dynamically by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- 事件日志 -->
+        <div class="events-section">
+            <h2>Event Log</h2>
+            <div class="event-log" id="eventLog">
+                <div class="event-item">
+                    <div class="event-time">Waiting for data...</div>
+                    <div class="event-message">System is initializing</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-section">
+            <h2>Report Generation</h2>
+            <p style="color: #b7c8d8; margin: 10px 0;">The report is generated automatically after completion; manual trigger is also available.</p>
+            <button id="reportBtn" class="btn btn-primary" onclick="generateReport()">Generate Experiment Report</button>
+            <div class="report-status-box">
+                <div>Status: <span id="reportState">Not generated</span></div>
+                <div>Generated at: <span id="reportGeneratedAt">--</span></div>
+                <div>Duration: <span id="reportDuration">--</span></div>
+                <div>Message: <span id="reportMessage">Waiting for auto generation after completion</span></div>
+            </div>
+        </div>
+        
+        <div class="last-update" id="lastUpdate">
+            Last Update: --
+        </div>
+    </div>
+    
+    <script>
+        const modeNames = {
+            'minimal': 'Minimal Test (19 tasks)',
+            'quick': 'Quick Test (40 tasks)',
+            'baseline': 'Baseline Test (79 tasks)',
+            'stress': 'Stress Test (316 tasks)',
+            'monitor': 'Monitoring Mode (316 tasks)',
+            's2_core': 'S2 Core Comparison (316 tasks)',
+            'baseline2': 'Baseline Test (legacy alias)',
+            'stress2': 'Stress Test (legacy alias)',
+            's2_realtime': 'Baseline Test (legacy alias)',
+            's2_congestion': 'Stress Test (legacy alias)',
+            's2_peak': 'Stress Test (legacy alias)',
+            'unknown': 'Unknown Mode'
+        };
+
+        const algorithmNames = {
+            'naive': 'Naive',
+            'path_only': 'Path Only',
+            'path_reservation': 'Path+Reservation',
+            'full': 'Full System',
+            'rule_greedy': 'Rule-based (Greedy)',
+            'cbs_based': 'CBS-based',
+            'auction_based': 'Auction-based',
+            'proposed': 'Proposed',
+            'unknown': 'Unknown'
+        };
+        
+        const statusClasses = {
+            'IDLE': 'robot-idle',
+            'MOVING': 'robot-moving',
+            'LOADING': 'robot-loading',
+            'UNLOADING': 'robot-unloading'
+        };
+        
+        const statusNames = {
+            'IDLE': 'Idle',
+            'MOVING': 'Moving',
+            'LOADING': 'Loading',
+            'UNLOADING': 'Unloading'
+        };
+
+        let updateInFlight = false;
+        let latestRequestId = 0;
+
+        function toNumber(value, fallback = 0) {
+            const n = Number(value);
+            return Number.isFinite(n) ? n : fallback;
+        }
+        
+        function updateDashboard() {
+            if (updateInFlight) {
+                return;
+            }
+
+            updateInFlight = true;
+            const requestId = ++latestRequestId;
+
+            fetch('/api/data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (requestId !== latestRequestId) {
+                        return;
+                    }
+
+                    // 更新实验模式
+                    document.getElementById('experimentMode').textContent = 
+                        modeNames[data.experiment_mode] || modeNames['unknown'];
+                    const algo = (data.task_stats.algorithm_mode || data.algorithm_mode || 'unknown');
+                    document.getElementById('algorithmMode').textContent = 'Algorithm: ' + (algorithmNames[algo] || algorithmNames['unknown']);
+                    
+                    // 更新状态横幅
+                    const banner = document.getElementById('statusBanner');
+                    if (data.system_status === 'RUNNING') {
+                        banner.textContent = 'Running - data is updating in real time';
+                        banner.className = 'status-banner status-running';
+                    } else {
+                        banner.textContent = 'System is initializing...';
+                        banner.className = 'status-banner status-waiting';
+                    }
+                    
+                    // 更新统计数据
+                    const stats = data.task_stats || {};
+                    document.getElementById('totalTasks').textContent = toNumber(stats.total_tasks, 0);
+                    document.getElementById('completedTasks').textContent = toNumber(stats.completed_tasks, 0);
+                    document.getElementById('elapsedTime').textContent = 
+                        Math.floor(toNumber(stats.elapsed_time, 0)) + 's';
+                    document.getElementById('completionRate').textContent = 
+                        toNumber(stats.completion_rate, 0).toFixed(1) + '%';
+
+                    document.getElementById('deadlockCount').textContent = toNumber(stats.deadlock_count, 0);
+                    document.getElementById('yieldCount').textContent = toNumber(stats.yield_count, 0);
+                    document.getElementById('recoveryCount').textContent = toNumber(stats.recovery_count, 0);
+                    document.getElementById('collisionCount').textContent = toNumber(stats.collision_count, 0);
+                    document.getElementById('throughput').textContent = toNumber(stats.throughput_per_min, 0).toFixed(2) + '/min';
+                    document.getElementById('avgTaskTime').textContent = Math.floor(toNumber(stats.avg_task_time, 0)) + 's';
+                    document.getElementById('makespan').textContent = Math.floor(toNumber(stats.makespan, 0)) + 's';
+                    document.getElementById('totalTravelDistance').textContent = toNumber(stats.total_travel_distance, 0).toFixed(1) + 'm';
+                    document.getElementById('loadBalanceGini').textContent = toNumber(stats.load_balance_gini, 0).toFixed(3);
+                    document.getElementById('robotCount').textContent = toNumber(stats.scalability_robot_count, 0);
+                    document.getElementById('taskCount').textContent = toNumber(stats.scalability_task_count, 0);
+
+                    document.getElementById('taskCompletionRatePct').textContent = toNumber(stats.task_completion_rate_pct, 0).toFixed(1) + '%';
+                    document.getElementById('deadlockResolutionRatio').textContent = (toNumber(stats.deadlock_resolution_ratio, 0) * 100).toFixed(1) + '%';
+                    
+                    // 更新进度条
+                    const progress = toNumber(stats.completion_rate, 0);
+                    const progressBar = document.getElementById('progressBar');
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = progress.toFixed(1) + '%';
+
+                    // 报告状态
+                    const rs = data.report_status || {};
+                    const reportBtn = document.getElementById('reportBtn');
+                    if (rs.generating) {
+                        reportBtn.disabled = true;
+                        reportBtn.textContent = 'Generating report...';
+                    } else {
+                        reportBtn.disabled = false;
+                        reportBtn.textContent = 'Generate Experiment Report';
+                    }
+
+                    let reportState = 'Not generated';
+                    if (rs.generating) reportState = 'Generating';
+                    else if (rs.generated) reportState = 'Generated';
+                    document.getElementById('reportState').textContent = reportState;
+                    document.getElementById('reportGeneratedAt').textContent = rs.generated_at || '--';
+                    document.getElementById('reportDuration').textContent =
+                        (rs.duration_sec !== null && rs.duration_sec !== undefined) ? `${rs.duration_sec}s` : '--';
+                    document.getElementById('reportMessage').textContent = rs.message || 'Waiting for auto generation after completion';
+                    
+                    // 更新机器人状态
+                    const robotsGrid = document.getElementById('robotsGrid');
+                    robotsGrid.innerHTML = '';
+                    const robotStats = data.robot_stats || {};
+                    
+                    for (let i = 1; i <= 10; i++) {
+                        const robotId = 'robot_' + i;
+                        const robot = robotStats[robotId] || {
+                            status: 'IDLE',
+                            position: [0, 0],
+                            current_task: null,
+                            tasks_completed: 0
+                        };
+                        const position = Array.isArray(robot.position) && robot.position.length >= 2
+                            ? robot.position
+                            : [0, 0];
+                        
+                        const statusClass = statusClasses[robot.status] || 'robot-idle';
+                        const statusNameSafe = statusNames[robot.status] || 'Unknown';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'robot-card ' + statusClass;
+                        card.innerHTML = `
+                            <div class="robot-name">Robot ${i}</div>
+                            <div class="robot-status">Status: ${statusNameSafe}</div>
+                            <div class="robot-status">Position: (${toNumber(position[0], 0).toFixed(1)}, ${toNumber(position[1], 0).toFixed(1)})</div>
+                            <div class="robot-status">Completed: ${toNumber(robot.tasks_completed, 0)} tasks</div>
+                        `;
+                        robotsGrid.appendChild(card);
+                    }
+                    
+                    // 更新事件日志
+                    const eventLog = document.getElementById('eventLog');
+                    eventLog.innerHTML = '';
+                    const events = Array.isArray(data.events) ? data.events : [];
+                    
+                    if (events.length === 0) {
+                        eventLog.innerHTML = '<div class="event-item"><div class="event-message">No events yet</div></div>';
+                    } else {
+                        events.slice(0, 20).forEach(event => {
+                            const item = document.createElement('div');
+                            item.className = 'event-item';
+                            item.innerHTML = `
+                                <div class="event-time">${event.time_str}</div>
+                                <div class="event-message">${event.message}</div>
+                            `;
+                            eventLog.appendChild(item);
+                        });
+                    }
+                    
+                    // 更新最后刷新时间
+                    if (data.last_update) {
+                        document.getElementById('lastUpdate').textContent = 
+                            'Last Update: ' + data.last_update;
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch dashboard data:', error);
+                    const banner = document.getElementById('statusBanner');
+                    banner.textContent = 'Data refresh failed, retrying...';
+                    banner.className = 'status-banner status-waiting';
+                })
+                .finally(() => {
+                    updateInFlight = false;
+                });
+        }
+        
+        function generateReport() {
+            if (!confirm('Generate the report now?\nIf the experiment is incomplete, current progress will be returned.')) {
+                return;
+            }
+            
+            fetch('/api/report/generate', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Success: ' + data.message);
+                    } else {
+                        alert('Failed: ' + data.message);
+                    }
+                    updateDashboard();
+                })
+                .catch(error => {
+                    alert('Report generation failed: ' + error);
+                });
+        }
+        
+        // 每2秒自动刷新
+        updateDashboard();
+        setInterval(updateDashboard, 2000);
+    </script>
+</body>
+</html>

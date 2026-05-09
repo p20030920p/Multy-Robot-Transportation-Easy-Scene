@@ -1,0 +1,32 @@
+
+<launch>
+  <arg name="robot_id" default="0"/>
+  
+  <!-- move_base节点 -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <remap from="cmd_vel" to="/robot_$(arg robot_id)/cmd_vel"/>
+    <remap from="odom" to="/robot_$(arg robot_id)/odom"/>
+    <remap from="scan" to="/robot_$(arg robot_id)/scan"/>
+    
+    <!-- 代价地图配置 -->
+    <rosparam file="$(find smart_factory_sim)/config/costmap_common.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find smart_factory_sim)/config/costmap_common.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(find smart_factory_sim)/config/global_costmap.yaml" command="load"/>
+    <rosparam file="$(find smart_factory_sim)/config/local_costmap.yaml" command="load"/>
+    
+    <!-- 路径规划器配置 -->
+    <rosparam file="$(find smart_factory_sim)/config/base_local_planner_params.yaml" command="load"/>
+    
+    <!-- 参数调优 -->
+    <param name="base_global_planner" value="navfn/NavfnROS"/>
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    
+    <param name="controller_frequency" value="10.0"/>
+    <param name="planner_patience" value="5.0"/>
+    <param name="controller_patience" value="15.0"/>
+    <param name="conservative_reset_dist" value="3.0"/>
+    <param name="planner_frequency" value="5.0"/>
+    <param name="oscillation_timeout" value="10.0"/>
+    <param name="oscillation_distance" value="0.2"/>
+  </node>
+</launch>

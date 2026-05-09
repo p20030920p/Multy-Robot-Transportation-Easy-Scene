@@ -1,0 +1,426 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="smart_factory">
+    
+    <!-- 物理引擎设置 -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    
+    <!-- 光照 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    
+    <!-- 地面 -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    
+    <!-- 工厂墙壁（12m x 10m矩形区域） -->
+    <!-- 北墙 -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>6 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>12 0.2 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>12 0.2 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 南墙 -->
+    <model name="wall_south">
+      <static>true</static>
+      <pose>6 10 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>12 0.2 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>12 0.2 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 东墙 -->
+    <model name="wall_east">
+      <static>true</static>
+      <pose>12 5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 10 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 10 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 西墙 -->
+    <model name="wall_west">
+      <static>true</static>
+      <pose>0 5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 10 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 10 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 梳棉机区域（4台） -->
+    <model name="carding_machine_0">
+      <static>true</static>
+      <pose>3.25 1.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.8 1</ambient>
+            <diffuse>0.3 0.5 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_1">
+      <static>true</static>
+      <pose>3.25 3.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.8 1</ambient>
+            <diffuse>0.3 0.5 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_2">
+      <static>true</static>
+      <pose>3.25 5.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.8 1</ambient>
+            <diffuse>0.3 0.5 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_3">
+      <static>true</static>
+      <pose>3.25 7.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.8 1</ambient>
+            <diffuse>0.3 0.5 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机1区域（2台） -->
+    <model name="drawing1_machine_0">
+      <static>true</static>
+      <pose>5.75 2.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.8 0.4 1</ambient>
+            <diffuse>0.3 0.9 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing1_machine_1">
+      <static>true</static>
+      <pose>5.75 5.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.8 0.4 1</ambient>
+            <diffuse>0.3 0.9 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机2区域（2台） -->
+    <model name="drawing2_machine_0">
+      <static>true</static>
+      <pose>7.75 2.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.2 1</ambient>
+            <diffuse>0.9 0.9 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing2_machine_1">
+      <static>true</static>
+      <pose>7.75 5.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.2 1</ambient>
+            <diffuse>0.9 0.9 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 粗纱机区域（2台） -->
+    <model name="roving_machine_0">
+      <static>true</static>
+      <pose>9.25 2.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+            <diffuse>0.9 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="roving_machine_1">
+      <static>true</static>
+      <pose>9.25 6.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.8 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+            <diffuse>0.9 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 存储区域标记（可视化） -->
+    <model name="empty_storage">
+      <static>true</static>
+      <pose>1.0 1.0 0.05 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.0 1.0 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.6 0.6 0.5</ambient>
+            <diffuse>0.7 0.7 0.7 0.5</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="completed_storage">
+      <static>true</static>
+      <pose>11.0 9.0 0.05 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.0 1.0 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 0.2 0.2 0.5</ambient>
+            <diffuse>1.0 0.3 0.3 0.5</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- GUI插件 -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>6.0 -5.0 8.0 0 0.6 1.57</pose>
+      </camera>
+    </gui>
+    
+  </world>
+</sdf>

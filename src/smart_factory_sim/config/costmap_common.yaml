@@ -1,0 +1,38 @@
+
+# 代价地图通用参数（全局和局部共用）
+
+# 机器人尺寸（根据原系统的机器人大小调整）
+robot_radius: 0.15  # 机器人半径 15cm
+
+# 障碍物层配置
+obstacle_range: 2.5
+raytrace_range: 3.0
+
+# 膨胀层配置
+inflation_radius: 0.3  # 膨胀半径
+cost_scaling_factor: 10.0
+
+# 观测源（激光雷达）
+observation_sources: scan
+
+scan: {
+  sensor_frame: laser,
+  data_type: LaserScan,
+  topic: scan,
+  marking: true,
+  clearing: true,
+  min_obstacle_height: 0.0,
+  max_obstacle_height: 2.0
+}
+
+# 地图类型
+map_type: costmap
+
+# 是否追踪未知空间
+track_unknown_space: false
+
+# 层配置
+plugins:
+  - {name: static_layer, type: "costmap_2d::StaticLayer"}
+  - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+  - {name: inflation_layer, type: "costmap_2d::InflationLayer"}

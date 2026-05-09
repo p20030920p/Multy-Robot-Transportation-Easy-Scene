@@ -1,0 +1,8 @@
+# 物料处理服务请求
+int32 machine_id
+int32[] material_ids
+---
+# 物料处理服务响应
+bool success
+string message
+int32 processed_count

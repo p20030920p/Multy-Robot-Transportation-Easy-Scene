@@ -1,0 +1,2 @@
+smart_factory_sim
+-DCATKIN_DEVEL_PREFIX=/home/qzl/graduate/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/qzl/graduate/catkin_ws/install -G Unix Makefiles

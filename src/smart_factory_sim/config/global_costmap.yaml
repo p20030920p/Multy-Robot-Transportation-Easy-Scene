@@ -1,0 +1,17 @@
+
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_link
+  update_frequency: 2.0
+  publish_frequency: 1.0
+  
+  # 全局地图尺寸（覆盖整个工厂 10m x 10m）
+  static_map: true
+  rolling_window: false
+  
+  width: 10.0
+  height: 10.0
+  resolution: 0.05  # 5cm精度
+  
+  # 变换容忍度
+  transform_tolerance: 0.5

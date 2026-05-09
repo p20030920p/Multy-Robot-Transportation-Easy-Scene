@@ -1,0 +1,663 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="smart_factory_10robots">
+    
+    <!-- 物理引擎设置 - 优化性能 -->
+    <physics type="ode">
+      <max_step_size>0.003</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>333.33</real_time_update_rate>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>50</iters>
+          <sor>1.0</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+    
+    <!-- 光照 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    
+    <!-- ⭐ 地面 - 扩大到 16m x 10m -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>18 12</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>18 12</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.92 0.92 0.92 1</ambient>
+            <diffuse>0.92 0.92 0.92 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- ================================ -->
+    <!-- ⭐⭐⭐ 新布局：存储区（扩大2.5倍） -->
+    <!-- 左上：空桶 | 右上：黄桶 -->
+    <!-- 左下：绿桶 | 右下：红桶 -->
+    <!-- ================================ -->
+    
+    <!-- 1. 空桶存储区 - 左上角 (2.0, 2.0), radius=0.9m -->
+    <model name="empty_storage_zone">
+      <static>true</static>
+      <pose>2.0 2.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.9</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 2. 绿桶存储区 - 左下角 (2.0, 8.0), radius=0.9m -->
+    <model name="green_storage_zone">
+      <static>true</static>
+      <pose>2.0 8.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.9</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.4 0.9 0.4 1</ambient>
+            <diffuse>0.5 1.0 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 3. 黄桶存储区 - 右上角 (14.0, 2.0), radius=0.9m -->
+    <model name="yellow_storage_zone">
+      <static>true</static>
+      <pose>14.0 2.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.9</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1.0 0.9 0.3 1</ambient>
+            <diffuse>1.0 1.0 0.4 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 4. 红桶存储区 - 右下角 (14.0, 8.0), radius=0.9m -->
+    <model name="red_storage_zone">
+      <static>true</static>
+      <pose>14.0 8.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.9</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1.0 0.4 0.4 1</ambient>
+            <diffuse>1.0 0.5 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 5. 完成区 - 右侧中间 (14.0, 5.0) -->
+    <model name="completed_zone">
+      <static>true</static>
+      <pose>14.0 5.0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.8</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.7 0.2 1</ambient>
+            <diffuse>0.3 0.8 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- ================================ -->
+    <!-- ⭐ 梳棉机区域 (4台) - 中间左侧 -->
+    <!-- 垂直排列：Y = 1.5, 3.5, 5.5, 7.5 -->
+    <!-- X = 5.0（等待）, 6.0（机器）, 7.0（完成） -->
+    <!-- ================================ -->
+    
+    <!-- 梳棉机等待区 -->
+    <model name="carding_waiting_0">
+      <static>true</static>
+      <pose>5.0 1.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_1">
+      <static>true</static>
+      <pose>5.0 3.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_2">
+      <static>true</static>
+      <pose>5.0 5.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_waiting_3">
+      <static>true</static>
+      <pose>5.0 7.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 梳棉机工作区 -->
+    <model name="carding_machine_0">
+      <static>true</static>
+      <pose>6.0 1.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.9 1</ambient>
+            <diffuse>0.3 0.5 1.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_1">
+      <static>true</static>
+      <pose>6.0 3.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.9 1</ambient>
+            <diffuse>0.3 0.5 1.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_2">
+      <static>true</static>
+      <pose>6.0 5.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.9 1</ambient>
+            <diffuse>0.3 0.5 1.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_machine_3">
+      <static>true</static>
+      <pose>6.0 7.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.4 0.9 1</ambient>
+            <diffuse>0.3 0.5 1.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 梳棉机完成区 -->
+    <model name="carding_finished_0">
+      <static>true</static>
+      <pose>7.0 1.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_finished_1">
+      <static>true</static>
+      <pose>7.0 3.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_finished_2">
+      <static>true</static>
+      <pose>7.0 5.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="carding_finished_3">
+      <static>true</static>
+      <pose>7.0 7.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- ================================ -->
+    <!-- ⭐ 拉伸机1区域 (2台) - 中间 -->
+    <!-- Y = 2.5, 6.5 -->
+    <!-- X = 8.0（等待）, 9.0（机器）, 10.0（完成） -->
+    <!-- ================================ -->
+    
+    <!-- 拉伸机1等待区 -->
+    <model name="drawing1_waiting_0">
+      <static>true</static>
+      <pose>8.0 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing1_waiting_1">
+      <static>true</static>
+      <pose>8.0 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机1工作区 -->
+    <model name="drawing1_machine_0">
+      <static>true</static>
+      <pose>9.0 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.3 0.9 0.4 1</ambient>
+            <diffuse>0.4 1.0 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing1_machine_1">
+      <static>true</static>
+      <pose>9.0 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.3 0.9 0.4 1</ambient>
+            <diffuse>0.4 1.0 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机1完成区 -->
+    <model name="drawing1_finished_0">
+      <static>true</static>
+      <pose>10.0 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing1_finished_1">
+      <static>true</static>
+      <pose>10.0 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- ================================ -->
+    <!-- ⭐ 拉伸机2区域 (2台) - 靠右 -->
+    <!-- Y = 2.5, 6.5 -->
+    <!-- X = 10.8（等待）, 11.8（机器）, 12.8（完成） -->
+    <!-- ================================ -->
+    
+    <!-- 拉伸机2等待区 -->
+    <model name="drawing2_waiting_0">
+      <static>true</static>
+      <pose>10.8 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing2_waiting_1">
+      <static>true</static>
+      <pose>10.8 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.78 0.78 0.78 1</ambient>
+            <diffuse>0.86 0.86 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机2工作区 -->
+    <model name="drawing2_machine_0">
+      <static>true</static>
+      <pose>11.8 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1.0 0.7 0.2 1</ambient>
+            <diffuse>1.0 0.8 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing2_machine_1">
+      <static>true</static>
+      <pose>11.8 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1.0 0.7 0.2 1</ambient>
+            <diffuse>1.0 0.8 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- 拉伸机2完成区 -->
+    <model name="drawing2_finished_0">
+      <static>true</static>
+      <pose>12.8 2.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="drawing2_finished_1">
+      <static>true</static>
+      <pose>12.8 6.5 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.62 0.62 0.62 1</ambient>
+            <diffuse>0.70 0.70 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- ⭐ GUI设置 - 俯视角度（调整到新的中心点） -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>8.0 -2.0 20.0 0 1.5 1.57</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
+    
+  </world>
+</sdf>
